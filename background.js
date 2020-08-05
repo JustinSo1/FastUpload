@@ -6,6 +6,7 @@ const setUpContextMenus = () => {
     contexts: ["image"],
   });
 };
+<<<<<<< HEAD
 
 function dataURItoBlob(dataURI) {
   var binary = window.atob(dataURI.split(",")[1]);
@@ -76,6 +77,11 @@ chrome.contextMenus.onClicked.addListener((info) => {
           .then((response) => response.text())
           .then((data) => console.log(data));
       });
+=======
+chrome.contextMenus.onClicked.addListener(() => {
+  chrome.identity.getAuthToken({ interactive: true }, function (token) {
+    console.log(token);
+>>>>>>> feat(background): OAuth authorization event
   });
 });
 chrome.runtime.onInstalled.addListener(() => {

@@ -11,9 +11,13 @@
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzhVgMteWCtnWGDXVTRKb8IESqwrgWHnkHVVBOR0yvg/y1PaoBipvMdOdd3MYUDs4qtiNSCNmBWH360bgtfGghFJZz3VWy9RSIeVClS6QtQXKUpf+9Uf2rZW7zR8g95dwaVOxVLNjByYf4Esi2FLTDSBgaRIo8T7ODwBqkQiYdHwUY064nT2Ud1ITAXcuSlmsI+0aqCY7MpWVdBVd9CWWZYhM6ldJymnWGLzu1ioJp0gTDIdmoTB6DQ9GrLVsvWiKHj3WkuVGRfnlp+XUK092MxtOgU8azhebQEL8m4PkzX/z67eLiYXlhcGV0NsAHAdWUlMD2ARiFy5uIrUEW6O/eQIDAQAB",
   "oauth2": {
     "client_id": "840534586195-6g0ovseodudjbi391cig9e9973j14jdo.apps.googleusercontent.com",
+<<<<<<< HEAD
     "scopes": [
       "https://www.googleapis.com/auth/userinfo.email",
       "https://www.googleapis.com/auth/photoslibrary.appendonly"
     ]
+=======
+    "scopes": ["https://www.googleapis.com/auth/userinfo.email"]
+>>>>>>> feat(background): OAuth authorization event
   }
 }
