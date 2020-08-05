@@ -1,21 +1,14 @@
 const setUpContextMenus = () => {
   chrome.contextMenus.create({
     id: "Upload",
-    title: "GUpload",
+    title: "EzUpload",
     type: "normal",
     contexts: ["image"],
   });
 };
 chrome.contextMenus.onClicked.addListener(() => {
-  $.ajax({
-    url: "https://jsonplaceholder.typicode.com/todos/1",
-    type: "GET",
-    success: function (result) {
-      console.log(result);
-    },
-    error: function (error) {
-      console.log(`Error ${error}`);
-    },
+  chrome.identity.getAuthToken({ interactive: true }, function (token) {
+    console.log(token);
   });
 });
 chrome.runtime.onInstalled.addListener(() => {
