@@ -37,7 +37,7 @@ Google Chrome extension that creates a context menu option that uploads the clic
 - Clone this repo to your local machine using `git clone -b master git@github.com:JustinSo1/EzUpload.git`
 
 ### Setup
-- Taken from `https://developer.chrome.com/extensions/getstarted`
+- Taken from https://developer.chrome.com/extensions/getstarted
 1. Open the Extension Management page by navigating to `chrome://extensions`.
     - The Extension Management page can also be opened by clicking on the Chrome menu, hovering over **More Tools** then selecting **Extensions**.
 2. Enable Developer Mode by clicking the toggle switch next to **Developer mode**.
