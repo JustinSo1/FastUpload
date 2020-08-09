@@ -7,6 +7,26 @@ const setUpContextMenus = () => {
   });
 };
 
+chrome.runtime.onInstalled.addListener(() => {
+  // When the app gets installed, set up the context menus
+  setUpContextMenus();
+});
+
+chrome.contextMenus.onClicked.addListener((info) => {
+  const mimeType = getMIMEType(info.srcUrl);
+  const binaryData = dataURItoBlob(info.srcUrl, mimeType);
+  uploadImage(binaryData);
+});
+
+const uploadImage = (binaryData) => {
+  chrome.identity.getAuthToken({ interactive: true }, async (token) => {
+    const authorization = `Bearer ${token}`;
+    const uploadToken = await uploadRawBytes(binaryData, authorization);
+    const response = await createMediaItem(authorization, uploadToken);
+    console.log(response);
+  });
+};
+
 const dataURItoBlob = (dataURI, mimeType) => {
   const binary = window.atob(dataURI.split(",")[1]);
   const byteArray = new Uint8Array(binary.length);
@@ -62,23 +82,3 @@ const createMediaItem = async (authorization, uploadToken) => {
 
   return response.text();
 };
-
-const uploadImage = (binaryData) => {
-  chrome.identity.getAuthToken({ interactive: true }, async (token) => {
-    const authorization = `Bearer ${token}`;
-    const uploadToken = await uploadRawBytes(binaryData, authorization);
-    const response = await createMediaItem(authorization, uploadToken);
-    console.log(response);
-  });
-};
-
-chrome.contextMenus.onClicked.addListener((info) => {
-  const mimeType = getMIMEType(info.srcUrl);
-  const binaryData = dataURItoBlob(info.srcUrl, mimeType);
-  uploadImage(binaryData);
-});
-
-chrome.runtime.onInstalled.addListener(() => {
-  // When the app gets installed, set up the context menus
-  setUpContextMenus();
-});
