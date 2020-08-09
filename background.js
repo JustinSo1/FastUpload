@@ -7,67 +7,78 @@ const setUpContextMenus = () => {
   });
 };
 
-function dataURItoBlob(dataURI) {
-  const binary = window.atob(dataURI.split(",")[1]);
-  let array = [];
-  for (let i = 0; i < binary.length; ++i) {
-    array.push(binary.charCodeAt(i));
-  }
-  return new Blob([new Uint8Array(array)], { type: "image/jpeg" });
-}
-
-chrome.contextMenus.onClicked.addListener((info) => {
-  const srcUrl = info.srcUrl;
-  const mimeType = srcUrl.substring(
-    srcUrl.indexOf(":") + 1,
-    srcUrl.indexOf(";")
-  );
-  const binaryData = dataURItoBlob(srcUrl);
-  const url = "https://photoslibrary.googleapis.com/v1/uploads";
-
-  chrome.identity.getAuthToken({ interactive: true }, function (token) {
-    authorization = `Bearer ${token}`;
-
-    const uploadHeaders = {
-      Authorization: authorization,
-      "Content-type": "application/octet-stream",
-      "X-Goog-Upload-Content-Type": mimeType,
-      "X-Goog-Upload-Protocol": "raw",
-    };
-    fetch(url, {
-      method: "POST",
-      headers: uploadHeaders,
-      body: binaryData,
-    })
-      .then((response) => response.text())
-      .then((data) => {
-        createURL =
-          "https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate";
-        const body = {
-          newMediaItems: [
-            {
-              description: "item-description",
-              simpleMediaItem: {
-                uploadToken: data,
-              },
-            },
-          ],
-        };
-        const createHeaders = {
-          "Content-Type": "application/json",
-          Authorization: authorization,
-        };
-        fetch(createURL, {
-          method: "POST",
-          headers: createHeaders,
-          body: JSON.stringify(body),
-        })
-          .then((response) => response.text())
-          .then((data) => console.log(data));
-      });
-  });
-});
 chrome.runtime.onInstalled.addListener(() => {
   // When the app gets installed, set up the context menus
   setUpContextMenus();
 });
+
+chrome.contextMenus.onClicked.addListener((info) => {
+  const mimeType = getMIMEType(info.srcUrl);
+  const binaryData = dataURItoBlob(info.srcUrl, mimeType);
+  uploadImage(binaryData);
+});
+
+const uploadImage = (binaryData) => {
+  chrome.identity.getAuthToken({ interactive: true }, async (token) => {
+    const authorization = `Bearer ${token}`;
+    const uploadToken = await uploadRawBytes(binaryData, authorization);
+    const response = await createMediaItem(authorization, uploadToken);
+    console.log(response);
+  });
+};
+
+const dataURItoBlob = (dataURI, mimeType) => {
+  const binary = window.atob(dataURI.split(",")[1]);
+  const byteArray = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; ++i) {
+    byteArray[i] = binary.charCodeAt(i);
+  }
+  return new Blob([byteArray], { type: mimeType });
+};
+
+const getMIMEType = (dataURI) => {
+  return dataURI.substring(dataURI.indexOf(":") + 1, dataURI.indexOf(";"));
+};
+
+const uploadRawBytes = async (binaryData, authorization) => {
+  const url = "https://photoslibrary.googleapis.com/v1/uploads";
+  const uploadHeaders = {
+    Authorization: authorization,
+    "Content-type": "application/octet-stream",
+    "X-Goog-Upload-Content-Type": binaryData.type,
+    "X-Goog-Upload-Protocol": "raw",
+  };
+  const response = await fetch(url, {
+    method: "POST",
+    headers: uploadHeaders,
+    body: binaryData,
+  });
+  return response.text();
+};
+
+const createMediaItem = async (authorization, uploadToken) => {
+  const createURL =
+    "https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate";
+  const createHeaders = {
+    "Content-Type": "application/json",
+    Authorization: authorization,
+  };
+  const body = {
+    newMediaItems: [
+      {
+        description: "item-description",
+        simpleMediaItem: {
+          uploadToken: uploadToken,
+        },
+      },
+    ],
+  };
+
+  const response = await fetch(createURL, {
+    method: "POST",
+    headers: createHeaders,
+    body: JSON.stringify(body),
+  });
+
+  return response.text();
+};
