@@ -20,56 +20,64 @@ const getMIMEType = (dataURI) => {
   return dataURI.substring(dataURI.indexOf(":") + 1, dataURI.indexOf(";"));
 };
 
-const uploadRawBytes = (binaryData) => {
+const uploadRawBytes = async (binaryData, authorization) => {
   const url = "https://photoslibrary.googleapis.com/v1/uploads";
-  chrome.identity.getAuthToken({ interactive: true }, (token) => {
-    const authorization = `Bearer ${token}`;
+  const uploadHeaders = {
+    Authorization: authorization,
+    "Content-type": "application/octet-stream",
+    "X-Goog-Upload-Content-Type": binaryData.type,
+    "X-Goog-Upload-Protocol": "raw",
+  };
+  const response = await fetch(url, {
+    method: "POST",
+    headers: uploadHeaders,
+    body: binaryData,
+  });
+  return response.text();
+};
 
-    const uploadHeaders = {
-      Authorization: authorization,
-      "Content-type": "application/octet-stream",
-      "X-Goog-Upload-Content-Type": binaryData.type,
-      "X-Goog-Upload-Protocol": "raw",
-    };
-    fetch(url, {
-      method: "POST",
-      headers: uploadHeaders,
-      body: binaryData,
-    })
-      .then((response) => response.text())
-      .then((data) => {
-        const createURL =
-          "https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate";
-        const body = {
-          newMediaItems: [
-            {
-              description: "item-description",
-              simpleMediaItem: {
-                uploadToken: data,
-              },
-            },
-          ],
-        };
-        const createHeaders = {
-          "Content-Type": "application/json",
-          Authorization: authorization,
-        };
-        fetch(createURL, {
-          method: "POST",
-          headers: createHeaders,
-          body: JSON.stringify(body),
-        })
-          .then((response) => response.text())
-          .then((data) => console.log(data));
-      });
+const createMediaItem = async (authorization, uploadToken) => {
+  const createURL =
+    "https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate";
+  const createHeaders = {
+    "Content-Type": "application/json",
+    Authorization: authorization,
+  };
+  const body = {
+    newMediaItems: [
+      {
+        description: "item-description",
+        simpleMediaItem: {
+          uploadToken: uploadToken,
+        },
+      },
+    ],
+  };
+
+  const response = await fetch(createURL, {
+    method: "POST",
+    headers: createHeaders,
+    body: JSON.stringify(body),
+  });
+
+  return response.text();
+};
+
+const uploadImage = (binaryData) => {
+  chrome.identity.getAuthToken({ interactive: true }, async (token) => {
+    const authorization = `Bearer ${token}`;
+    const uploadToken = await uploadRawBytes(binaryData, authorization);
+    const response = await createMediaItem(authorization, uploadToken);
+    console.log(response);
   });
 };
 
 chrome.contextMenus.onClicked.addListener((info) => {
   const mimeType = getMIMEType(info.srcUrl);
   const binaryData = dataURItoBlob(info.srcUrl, mimeType);
-  uploadRawBytes(binaryData);
+  uploadImage(binaryData);
 });
+
 chrome.runtime.onInstalled.addListener(() => {
   // When the app gets installed, set up the context menus
   setUpContextMenus();
