@@ -3,8 +3,17 @@
   "version": "1.0",
   "description": "Creates a context menu option for image files that allows for simple uploading to Google Photos",
   "manifest_version": 2,
-  "permissions": ["contextMenus"],
+  "permissions": ["contextMenus", "identity"],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["thirdParty/jquery-3.5.1.min.js", "background.js"],
+    "persistent": false
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzhVgMteWCtnWGDXVTRKb8IESqwrgWHnkHVVBOR0yvg/y1PaoBipvMdOdd3MYUDs4qtiNSCNmBWH360bgtfGghFJZz3VWy9RSIeVClS6QtQXKUpf+9Uf2rZW7zR8g95dwaVOxVLNjByYf4Esi2FLTDSBgaRIo8T7ODwBqkQiYdHwUY064nT2Ud1ITAXcuSlmsI+0aqCY7MpWVdBVd9CWWZYhM6ldJymnWGLzu1ioJp0gTDIdmoTB6DQ9GrLVsvWiKHj3WkuVGRfnlp+XUK092MxtOgU8azhebQEL8m4PkzX/z67eLiYXlhcGV0NsAHAdWUlMD2ARiFy5uIrUEW6O/eQIDAQAB",
+  "oauth2": {
+    "client_id": "840534586195-6g0ovseodudjbi391cig9e9973j14jdo.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/photoslibrary.appendonly"
+    ]
   }
 }
