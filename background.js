@@ -7,31 +7,28 @@ const setUpContextMenus = () => {
   });
 };
 
-function dataURItoBlob(dataURI) {
+const dataURItoBlob = (dataURI, mimeType) => {
   const binary = window.atob(dataURI.split(",")[1]);
-  let array = [];
+  const byteArray = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; ++i) {
-    array.push(binary.charCodeAt(i));
+    byteArray[i] = binary.charCodeAt(i);
   }
-  return new Blob([new Uint8Array(array)], { type: "image/jpeg" });
-}
+  return new Blob([byteArray], { type: mimeType });
+};
 
-chrome.contextMenus.onClicked.addListener((info) => {
-  const srcUrl = info.srcUrl;
-  const mimeType = srcUrl.substring(
-    srcUrl.indexOf(":") + 1,
-    srcUrl.indexOf(";")
-  );
-  const binaryData = dataURItoBlob(srcUrl);
+const getMIMEType = (dataURI) => {
+  return dataURI.substring(dataURI.indexOf(":") + 1, dataURI.indexOf(";"));
+};
+
+const uploadRawBytes = (binaryData) => {
   const url = "https://photoslibrary.googleapis.com/v1/uploads";
-
-  chrome.identity.getAuthToken({ interactive: true }, function (token) {
-    authorization = `Bearer ${token}`;
+  chrome.identity.getAuthToken({ interactive: true }, (token) => {
+    const authorization = `Bearer ${token}`;
 
     const uploadHeaders = {
       Authorization: authorization,
       "Content-type": "application/octet-stream",
-      "X-Goog-Upload-Content-Type": mimeType,
+      "X-Goog-Upload-Content-Type": binaryData.type,
       "X-Goog-Upload-Protocol": "raw",
     };
     fetch(url, {
@@ -41,7 +38,7 @@ chrome.contextMenus.onClicked.addListener((info) => {
     })
       .then((response) => response.text())
       .then((data) => {
-        createURL =
+        const createURL =
           "https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate";
         const body = {
           newMediaItems: [
@@ -66,6 +63,12 @@ chrome.contextMenus.onClicked.addListener((info) => {
           .then((data) => console.log(data));
       });
   });
+};
+
+chrome.contextMenus.onClicked.addListener((info) => {
+  const mimeType = getMIMEType(info.srcUrl);
+  const binaryData = dataURItoBlob(info.srcUrl, mimeType);
+  uploadRawBytes(binaryData);
 });
 chrome.runtime.onInstalled.addListener(() => {
   // When the app gets installed, set up the context menus
