@@ -1,4 +1,4 @@
-# EzUpload - A quick way to upload images to Google Photos
+# EzUpload - A quick way to upload images to Google Photos :framed_picture:
 
 Google Chrome extension that creates a context menu option that uploads the clicked image to your Google Photos
 
@@ -9,18 +9,16 @@ Google Chrome extension that creates a context menu option that uploads the clic
 <br />
 
 ## How To Use It
-1. Go to [setup](#setup) and finish the instructions there
-2. **Right click the image** you want to upload to Google Photos
-3. **Click** on the **extension name** (In this case it would be **EzUpload**) 
+1. **Go** to [setup](#setup) and finish the instructions there
+2. **Right click the image** you want to upload to Google Photos :point_right::computer_mouse:
+3. **Click** on the **extension name** (In this case it would be **EzUpload**) :computer_mouse:
 
 ***HOW TO UPLOAD IMAGE AFTER INSTALLATION***
 ![Recordit GIF](http://g.recordit.co/9mrvioBfEd.gif)
 
 ---
 
-## Table of Contents (Optional)
-
-> If your `README` has a lot of info, section headers might be nice.
+## Table of Contents
 
 - [Installation](#installation)
 - [Contributing](#contributing)
@@ -31,7 +29,7 @@ Google Chrome extension that creates a context menu option that uploads the clic
 
 ## Installation
 
-- No dependencies to get started!
+- :fire::fire::fire: No language dependencies to get started! :fire::fire::fire:
 - Use a Chrome browser
 
 ### Clone
