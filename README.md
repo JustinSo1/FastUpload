@@ -1,4 +1,4 @@
-# EzUpload - A quick way to upload images to Google Photos :framed_picture:
+# FastUpload - A quick way to upload images to Google Photos :framed_picture:
 
 Google Chrome extension that creates a context menu option that uploads the clicked image to your Google Photos
 
